@@ -1,5 +1,5 @@
 package:
-  name: pdb2pqr
+  name: htmd-pdb2pqr
   version: {{ environ.get('BUILD_VERSION', 0 ) }}
 
 source:
@@ -7,8 +7,7 @@ source:
 
 
 build:
-  noarch: python
-  number: {{ environ.get('BUILD_NUMBER', 0 ) }}
+  number: {{ environ.get('BUILD_NUMBER', 1 ) }}
   script: python setup.py install
 
 test:

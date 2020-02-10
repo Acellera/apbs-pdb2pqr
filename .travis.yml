@@ -1,0 +1,30 @@
+sudo: required
+dist: xenial
+matrix:
+  include:
+    - os: linux
+      language: python
+      python:
+        - '3.5'
+      env: OSNAME=Linux CONDA_PY=3.5
+
+env:
+  global:
+    - MINICONDA_DIR="$HOME/miniconda"
+    - PYTHONHASHSEED=0
+
+before_install:
+  - source ci/travis/install_miniconda.sh
+
+script:
+  - source activate test
+  - pip install --user --upgrade -q setuptools wheel twine
+  - pip install .
+
+deploy:
+  - provider: script
+    skip_cleanup: true
+    script: bash ./ci/travis/deploy.sh
+    on:
+      tags: true
+      branch: master

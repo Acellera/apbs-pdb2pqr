@@ -17,7 +17,6 @@ before_install:
   - source ci/travis/install_miniconda.sh
 
 script:
-  - source activate test
   - pip install --user --upgrade -q setuptools wheel twine
   - pip install .
 

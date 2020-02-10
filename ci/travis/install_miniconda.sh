@@ -30,5 +30,5 @@ else # if it does not exist, we need to install miniconda
 fi
 
 # we want to have an up to date conda-build.
-conda install -q conda-build=3 python=$TRAVIS_PYTHON_VERSION
+conda install -q conda-build=3 -y
 conda info -a # for debugging

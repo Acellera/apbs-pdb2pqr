@@ -51,6 +51,7 @@ __author__ = "Todd Dolinsky"
 import string
 from .structures import *
 
+
 class Nucleic(Residue):
     """
         Nucleic class
@@ -65,9 +66,10 @@ class Nucleic(Residue):
                     convert from the alternate naming scheme to the
                     main naming scheme.
     """
+
     def __init__(self, atoms, ref):
         sampleAtom = atoms[-1]
-        
+
         self.atoms = []
         self.name = sampleAtom.resName
         self.chainID = sampleAtom.chainID
@@ -84,18 +86,18 @@ class Nucleic(Residue):
         self.isNterm = 0
         self.missing = []
         self.reference = ref
-     
+
         # Create each atom
 
         for a in atoms:
-            if a.name in ref.altnames: # Rename atoms
+            if a.name in ref.altnames:  # Rename atoms
                 a.name = ref.altnames[a.name]
 
             if a.name not in self.map:
                 atom = Atom(a, "ATOM", self)
                 self.addAtom(atom)
 
-    def createAtom(self, atomname, newcoords):
+    def createAtom(self, atomname, newcoords, overwriteelement=None):
         """
             Create an atom.  Overrides the generic residue's createAtom().
 
@@ -105,14 +107,16 @@ class Nucleic(Residue):
         """
         oldatom = self.atoms[0]
         newatom = Atom(oldatom, "ATOM", self)
-        newatom.set("x",newcoords[0])
-        newatom.set("y",newcoords[1])
-        newatom.set("z",newcoords[2])
+        newatom.set("x", newcoords[0])
+        newatom.set("y", newcoords[1])
+        newatom.set("z", newcoords[2])
         newatom.set("name", atomname)
-        newatom.set("occupancy",1.00)
-        newatom.set("tempFactor",0.00)
+        newatom.set("occupancy", 1.00)
+        newatom.set("tempFactor", 0.00)
+        if overwriteelement is not None:
+            newatom.set("element", overwriteelement)
         newatom.added = 1
-        self.addAtom(newatom) 
+        self.addAtom(newatom)
 
     def addAtom(self, atom):
         """
@@ -127,8 +131,10 @@ class Nucleic(Residue):
             for bond in atom.reference.bonds:
                 if self.hasAtom(bond):
                     bondatom = self.map[bond]
-                    if bondatom not in atom.bonds: atom.bonds.append(bondatom)
-                    if atom not in bondatom.bonds: bondatom.bonds.append(atom)
+                    if bondatom not in atom.bonds:
+                        atom.bonds.append(bondatom)
+                    if atom not in bondatom.bonds:
+                        bondatom.bonds.append(atom)
         except KeyError:
             atom.reference = None
 
@@ -145,9 +151,12 @@ class Nucleic(Residue):
         """ 
            Adds the termini for all inherited objects
         """
-        if self.is5term: self.ffname = self.ffname + "5"
-        if self.is3term: self.ffname = self.ffname + "3"
- 
+        if self.is5term:
+            self.ffname = self.ffname + "5"
+        if self.is3term:
+            self.ffname = self.ffname + "3"
+
+
 class ADE(Nucleic):
     """
         Adenosine class
@@ -166,18 +175,21 @@ class ADE(Nucleic):
         """
         Nucleic.__init__(self, atoms, ref)
         self.reference = ref
-        
+
     def letterCode(self):
-        return 'A'
+        return "A"
 
     def setState(self):
         """
             Set the state to distinguish RNA from DNA.
         """
-        if self.hasAtom("O2'"): self.ffname = "RA"
-        else: self.ffname = "DA"
+        if self.hasAtom("O2'"):
+            self.ffname = "RA"
+        else:
+            self.ffname = "DA"
         Nucleic.setState(self)
-     
+
+
 class CYT(Nucleic):
     """
         Cytidine class
@@ -196,18 +208,21 @@ class CYT(Nucleic):
         """
         Nucleic.__init__(self, atoms, ref)
         self.reference = ref
-    
+
     def letterCode(self):
-        return 'C'
-        
+        return "C"
+
     def setState(self):
         """
             Set the state to distinguish RNA from DNA.
         """
-        if self.hasAtom("O2'"): self.ffname = "RC"
-        else: self.ffname = "DC"
+        if self.hasAtom("O2'"):
+            self.ffname = "RC"
+        else:
+            self.ffname = "DC"
         Nucleic.setState(self)
-        
+
+
 class GUA(Nucleic):
     """
         Guanosine class
@@ -226,17 +241,20 @@ class GUA(Nucleic):
         """
         Nucleic.__init__(self, atoms, ref)
         self.reference = ref
-        
+
     def letterCode(self):
-        return 'G'
-        
+        return "G"
+
     def setState(self):
         """
             Set the state to distinguish RNA from DNA.
         """
-        if self.hasAtom("O2'"): self.ffname = "RG"
-        else: self.ffname = "DG"
+        if self.hasAtom("O2'"):
+            self.ffname = "RG"
+        else:
+            self.ffname = "DG"
         Nucleic.setState(self)
+
 
 class THY(Nucleic):
     """
@@ -256,10 +274,10 @@ class THY(Nucleic):
         """
         Nucleic.__init__(self, atoms, ref)
         self.reference = ref
-        
+
     def letterCode(self):
-        return 'T'
-        
+        return "T"
+
     def setState(self):
         """
             Set the state to distinguish RNA from DNA.  In this case it is
@@ -267,7 +285,8 @@ class THY(Nucleic):
         """
         self.ffname = "DT"
         Nucleic.setState(self)
-                
+
+
 class URA(Nucleic):
     """
         Uridine class
@@ -286,10 +305,10 @@ class URA(Nucleic):
         """
         Nucleic.__init__(self, atoms, ref)
         self.reference = ref
-        
+
     def letterCode(self):
-        return 'U'
-        
+        return "U"
+
     def setState(self):
         """
             Set the state to distinguish RNA from DNA.  In this case it is
@@ -297,20 +316,24 @@ class URA(Nucleic):
         """
         self.ffname = "RU"
         Nucleic.setState(self)
-        
-#Tie the class name to the base name in NA.XML
+
+
+# Tie the class name to the base name in NA.XML
 class RA(ADE):
     pass
-     
+
+
 class RC(CYT):
     pass
-        
+
+
 class RG(GUA):
     pass
-        
+
+
 class DT(THY):
     pass
-        
+
+
 class RU(URA):
     pass
-

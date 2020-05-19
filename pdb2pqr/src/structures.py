@@ -48,7 +48,7 @@
 __date__ = "28 February 2006"
 __author__ = "Todd Dolinsky"
 
-BACKBONE = ["N","CA","C","O","O2","HA","HN","H","tN"]
+BACKBONE = ["N", "CA", "C", "O", "O2", "HA", "HN", "H", "tN"]
 
 import string
 from collections import OrderedDict
@@ -57,6 +57,7 @@ from .pdb import *
 from .utilities import *
 from .quatfit import *
 from .errors import PDBInternalError
+
 
 class Chain:
     """
@@ -90,7 +91,8 @@ class Chain:
             Returns
                 item:     The value of the member
         """
-        if name == "atoms": self.getAtoms()
+        if name == "atoms":
+            self.getAtoms()
         else:
             try:
                 item = getattr(self, name)
@@ -107,7 +109,7 @@ class Chain:
                 residue: The residue to be added (Residue)
         """
         self.residues.append(residue)
-        
+
     def numResidues(self):
         """
             Get the number of residues for the chain
@@ -136,7 +138,7 @@ class Chain:
             Returns
                 count:  Number of atoms in the chain (int)
         """
-        count = len(self.getAtoms())       
+        count = len(self.getAtoms())
         return count
 
     def getResidues(self):
@@ -144,7 +146,7 @@ class Chain:
             Return a list of Residue objects in this chain
         """
         return self.residues
-    
+
     def getAtoms(self):
         """
             Return a list of Atom objects contained in this chain
@@ -158,13 +160,13 @@ class Chain:
             for atom in myList:
                 atomlist.append(atom)
         return atomlist
-    
+
     def getSummary(self):
         output = []
         for residue in self.residues:
             output.append(residue.letterCode())
-            
-        return ''.join(output)
+
+        return "".join(output)
 
 
 class Residue:
@@ -185,7 +187,7 @@ class Residue:
         """
 
         sampleAtom = atoms[-1]
-        
+
         self.atoms = []
         self.name = sampleAtom.resName
         self.chainID = sampleAtom.chainID
@@ -199,7 +201,7 @@ class Residue:
 
         atomclass = ""
         for a in atoms:
-            if isinstance(a,ATOM):
+            if isinstance(a, ATOM):
                 atomclass = "ATOM"
             elif isinstance(a, HETATM):
                 atomclass = "HETATM"
@@ -207,14 +209,14 @@ class Residue:
             atomname = atom.get("name")
             if atomname not in self.map:
                 self.addAtom(atom)
-            else: # Don't add duplicate atom              
+            else:  # Don't add duplicate atom
                 oldatom = self.getAtom(atomname)
-                oldatom.set("altLoc","")
+                oldatom.set("altLoc", "")
 
         if self.name == "HOH":
             self.name = "WAT"
             for atom in self.atoms:
-                atom.set("resName","WAT")
+                atom.set("resName", "WAT")
 
     def __str__(self):
         """
@@ -222,8 +224,8 @@ class Residue:
         """
         text = "%s %s %i%s" % (self.name, self.chainID, self.resSeq, self.iCode)
         return text
-    
-    #TODO: Kill this in a fire.
+
+    # TODO: Kill this in a fire.
     def get(self, name):
         """
             Get a member of the Residue class
@@ -249,7 +251,7 @@ class Residue:
             item = getattr(self, name)
             return item
         except AttributeError:
-            message = "Unable to access object \"%s\" in class Residue" % name
+            message = 'Unable to access object "%s" in class Residue' % name
             raise PDBInternalError(message)
 
     def set(self, name, value):
@@ -277,13 +279,13 @@ class Residue:
             Returns
                 item:          The value of the member   
         """
-        if name == "resSeq": 
+        if name == "resSeq":
             self.setResSeq(value)
         else:
             try:
                 setattr(self, name, value)
             except AttributeError:
-                message = "Unable to set object \"%s\" in class Residue" % name
+                message = 'Unable to set object "%s" in class Residue' % name
                 raise PDBInternalError(message)
 
     def update_terminus_status(self):
@@ -292,26 +294,26 @@ class Residue:
         # If Nterm then update counter of hydrogens
         #
         if self.isNterm:
-            count=0
-            atoms=['H','H2','H3']
+            count = 0
+            atoms = ["H", "H2", "H3"]
             for atom in atoms:
                 for atom2 in self.atoms:
-                    atomname=atom2.get('name')
-                    if atom==atomname:
-                        count=count+1
-            self.isNterm=count
+                    atomname = atom2.get("name")
+                    if atom == atomname:
+                        count = count + 1
+            self.isNterm = count
         #
         # If Cterm then update counter
         #
         if self.isCterm:
-            self.isCterm=None
+            self.isCterm = None
             for atom in self.atoms:
-                atomname=atom.get('name')
-                if atomname=='HO':
-                    self.isCterm=2
+                atomname = atom.get("name")
+                if atomname == "HO":
+                    self.isCterm = 2
                     break
             if not self.isCterm:
-                self.isCterm=1
+                self.isCterm = 1
         return
 
     def numAtoms(self):
@@ -322,7 +324,7 @@ class Residue:
                 Number of atoms in the residue (int)
         """
         return len(self.atoms)
-                    
+
     def setResSeq(self, value):
         """
             Set the atom field resSeq to a certain value and
@@ -335,8 +337,8 @@ class Residue:
         self.iCode = ""
         self.resSeq = value
         for atom in self.atoms:
-            atom.set("resSeq",value)
-            #atom.set("iCode","")
+            atom.set("resSeq", value)
+            # atom.set("iCode","")
 
     def setChainID(self, value):
         """
@@ -345,7 +347,7 @@ class Residue:
         self.chainID = value
         for atom in self.atoms:
             atom.set("chainID", value)
-        
+
     def addAtom(self, atom):
         """
             Add the atom object to the residue.
@@ -365,7 +367,7 @@ class Residue:
         """
 
         # Delete the atom from the map
-        
+
         atom = self.map[atomname]
         bonds = atom.bonds
         del self.map[atomname]
@@ -375,7 +377,7 @@ class Residue:
         self.atoms.remove(atom)
 
         # Delete all instances of the atom as a bond
-        
+
         for bondatom in bonds:
             if atom in bondatom.bonds:
                 bondatom.bonds.remove(atom)
@@ -391,11 +393,11 @@ class Residue:
                 newname: The new atom name (string)
         """
         atom = self.map[oldname]
-        atom.set("name",newname)
+        atom.set("name", newname)
         self.map[newname] = atom
         del self.map[oldname]
-        
-    def createAtom(self, name, newcoords, type):
+
+    def createAtom(self, name, newcoords, type, overwriteelement=None):
         """
             Add a new atom object to the residue. Uses an atom
             currently in the residue to seed the new atom
@@ -408,13 +410,15 @@ class Residue:
         """
         oldatom = self.atoms[0]
         newatom = Atom(oldatom, type, self)
-        newatom.set("x",newcoords[0])
-        newatom.set("y",newcoords[1])
-        newatom.set("z",newcoords[2])
+        newatom.set("x", newcoords[0])
+        newatom.set("y", newcoords[1])
+        newatom.set("z", newcoords[2])
         newatom.set("name", name)
-        newatom.set("occupancy",1.00)
-        newatom.set("tempFactor",0.00)
-        self.addAtom(newatom) 
+        newatom.set("occupancy", 1.00)
+        newatom.set("tempFactor", 0.00)
+        if overwriteelement is not None:
+            newatom.set("element", overwriteelement)
+        self.addAtom(newatom)
 
     def addMissing(self, value):
         """
@@ -432,7 +436,7 @@ class Residue:
             Parameters
                 resname: The name of the residue to retrieve (string)
         """
-        return self.map.get(name);
+        return self.map.get(name)
 
     def getAtoms(self):
         return self.atoms
@@ -449,14 +453,14 @@ class Residue:
             Returns:
                 charge: The charge of the residue (float)
         """
-        #ffcharge can be None.
+        # ffcharge can be None.
         charge = (atom.ffcharge for atom in self.atoms if atom.ffcharge)
         charge = sum(charge)
-#        charge = 0.0
-#        for atom in self.atoms:
-#            atomcharge = atom.get("ffcharge")
-#            if atomcharge != None:
-#                charge += atomcharge
+        #        charge = 0.0
+        #        for atom in self.atoms:
+        #            atomcharge = atom.get("ffcharge")
+        #            if atomcharge != None:
+        #                charge += atomcharge
 
         charge = float("%.4f" % charge)
         return charge
@@ -484,66 +488,72 @@ class Residue:
         """
         moveatoms = []
         movecoords = []
-        
+
         initcoords = subtract(atom2.getCoords(), atom1.getCoords())
 
         # Determine which atoms to rotate
-        
+
         for atom in atom2.bonds:
-            if atom == atom1: continue
+            if atom == atom1:
+                continue
             moveatoms.append(atom)
             movecoords.append(subtract(atom.getCoords(), atom1.getCoords()))
 
         newcoords = qchichange(initcoords, movecoords, angle)
         for i in range(len(moveatoms)):
             atom = moveatoms[i]
-            x = (newcoords[i][0] + atom1.get("x"))
-            y = (newcoords[i][1] + atom1.get("y"))
-            z = (newcoords[i][2] + atom1.get("z"))
+            x = newcoords[i][0] + atom1.get("x")
+            y = newcoords[i][1] + atom1.get("y")
+            z = newcoords[i][2] + atom1.get("z")
             atom.set("x", x)
             atom.set("y", y)
             atom.set("z", z)
-           
 
     def setDonorsAndAcceptors(self):
         """
             Set the donors and acceptors within the residue
         """
-        if not hasattr(self, "reference"): return
+        if not hasattr(self, "reference"):
+            return
         for atom in self.getAtoms():
             atomname = atom.get("name")
             resname = self.name
 
             atom.set("hdonor", 0)
             atom.set("hacceptor", 0)
-         
+
             if atomname.startswith("N"):
                 bonded = 0
                 for bondedatom in atom.bonds:
                     if bondedatom.isHydrogen():
-                        atom.set("hdonor",1)
+                        atom.set("hdonor", 1)
                         bonded = 1
                         break
                 if not bonded and self.reference.name == "HIS":
-                    atom.set("hacceptor",1)
-                    
-            elif atomname.startswith("O") or \
-                 (atomname.startswith("S") and self.reference.name == "CYS"):
-                atom.set("hacceptor",1)
+                    atom.set("hacceptor", 1)
+
+            elif atomname.startswith("O") or (
+                atomname.startswith("S") and self.reference.name == "CYS"
+            ):
+                atom.set("hacceptor", 1)
                 for bondedatom in atom.bonds:
                     if bondedatom.isHydrogen():
-                        atom.set("hdonor",1)
-                        break     
+                        atom.set("hdonor", 1)
+                        break
 
     def reorder(self):
         """
             Reorder the atoms to start with N, CA, C, O if they exist
         """
         templist = []
-        if self.hasAtom("N"): templist.append(self.getAtom("N"))
-        if self.hasAtom("CA"): templist.append(self.getAtom("CA"))
-        if self.hasAtom("C"): templist.append(self.getAtom("C"))
-        if self.hasAtom("O"): templist.append(self.getAtom("O"))
+        if self.hasAtom("N"):
+            templist.append(self.getAtom("N"))
+        if self.hasAtom("CA"):
+            templist.append(self.getAtom("CA"))
+        if self.hasAtom("C"):
+            templist.append(self.getAtom("C"))
+        if self.hasAtom("O"):
+            templist.append(self.getAtom("O"))
 
         # Add remaining atoms
         for atom in self.atoms:
@@ -553,9 +563,10 @@ class Residue:
         # Change the list pointer
 
         self.atoms = templist[:]
-        
+
     def letterCode(self):
-        return 'X'
+        return "X"
+
 
 class Atom(ATOM):
     """
@@ -566,7 +577,7 @@ class Atom(ATOM):
         Also simplifies code by combining ATOM and HETATM objects into a
         single class.
     """
-    
+
     def __init__(self, atom, type, residue):
         """
             Initialize the new Atom object by using the old object.
@@ -579,7 +590,9 @@ class Atom(ATOM):
         if type == "ATOM" or type == "HETATM":
             self.type = type
         else:
-            raise PDBInternalError("Invalid atom type %s (Atom Class IN structures.py)!" % type)
+            raise PDBInternalError(
+                "Invalid atom type %s (Atom Class IN structures.py)!" % type
+            )
         self.serial = atom.serial
         self.name = atom.name
         self.altLoc = atom.altLoc
@@ -609,11 +622,10 @@ class Atom(ATOM):
         self.refdistance = 0
         self.id = None
 
-        self.mol2charge=None
-        if hasattr(atom,'mol2charge'):
-            self.mol2charge=atom.mol2charge
-        
-    
+        self.mol2charge = None
+        if hasattr(atom, "mol2charge"):
+            self.mol2charge = atom.mol2charge
+
     def getCommonStringRep(self, chainflag=False):
         """
             Returns a string of the common column of the new atom type.  
@@ -642,12 +654,12 @@ class Atom(ATOM):
             outstr += str.ljust(tstr, 4)[:4]
         else:
             outstr += " " + str.ljust(tstr, 3)[:3]
-            
+
         outstr += " "
         if chainflag:
             tstr = self.chainID
         else:
-            tstr = ''
+            tstr = ""
         outstr += str.ljust(tstr, 1)[:1]
         tstr = "%d" % self.resSeq
         outstr += str.rjust(tstr, 4)[:4]
@@ -660,9 +672,9 @@ class Atom(ATOM):
         tstr = "%8.3f" % self.y
         outstr += str.ljust(tstr, 8)[:8]
         tstr = "%8.3f" % self.z
-        outstr += str.ljust(tstr, 8)[:8] 
+        outstr += str.ljust(tstr, 8)[:8]
         return outstr
-        
+
     def __str__(self):
         """
             Returns a string of the new atom type.  Uses the ATOM string
@@ -675,8 +687,7 @@ class Atom(ATOM):
                 str: String with ATOM/HETATM field set appropriately
         """
         return self.getPQRString()
-    
-    
+
     def getPQRString(self, chainflag=False):
         """
             Returns a string of the new atom type.  Uses the ATOM string
@@ -689,21 +700,20 @@ class Atom(ATOM):
                 str: String with ATOM/HETATM field set appropriately
         """
         outstr = self.getCommonStringRep(chainflag=chainflag)
-        
-        if self.ffcharge != None: 
+
+        if self.ffcharge != None:
             ffcharge = "%.4f" % self.ffcharge
-        else: 
+        else:
             ffcharge = "0.0000"
         outstr += str.rjust(ffcharge, 8)[:8]
-        if self.radius != None: 
+        if self.radius != None:
             ffradius = "%.4f" % self.radius
-        else: 
+        else:
             ffradius = "0.0000"
         outstr += str.rjust(ffradius, 7)[:7]
 
         return outstr
-    
-    
+
     def getPDBString(self):
         """
             Returns a string of the new atom type.  Uses the ATOM string
@@ -717,13 +727,13 @@ class Atom(ATOM):
                 str: String with ATOM/HETATM field set appropriately
         """
         outstr = self.getCommonStringRep(chainflag=True)
-        
+
         tstr = "%6.2f" % self.occupancy
         outstr += str.ljust(tstr, 6)[:6]
         tstr = "%6.2f" % self.tempFactor
         outstr += str.rjust(tstr, 6)[:6]
-        #padding between temp factor and segID
-        outstr += ' ' * 7
+        # padding between temp factor and segID
+        outstr += " " * 7
         tstr = self.segID
         outstr += str.ljust(tstr, 4)[:4]
         tstr = self.element
@@ -731,11 +741,10 @@ class Atom(ATOM):
         tstr = str(self.charge)
         outstr += str.ljust(tstr, 2)[:2]
 
-
         return outstr
-    
-    #TODO: What? Why? Isn't this Python?
-    #Are we really doing attribute access based
+
+    # TODO: What? Why? Isn't this Python?
+    # Are we really doing attribute access based
     # on dynamic names? A search of the code says no.
     def get(self, name):
         """
@@ -775,7 +784,7 @@ class Atom(ATOM):
             item = getattr(self, name)
             return item
         except AttributeError:
-            message = "Unable to access object \"%s\" in class Atom" % name
+            message = 'Unable to access object "%s" in class Atom' % name
             raise PDBInternalError(message)
 
     def set(self, name, value):
@@ -811,8 +820,8 @@ class Atom(ATOM):
         try:
             setattr(self, name, value)
         except AttributeError:
-            message = "Unable to set object \"%s\" in class Atom" % name
-            raise PDBInternalError(message)   
+            message = 'Unable to set object "%s" in class Atom' % name
+            raise PDBInternalError(message)
 
     def getCoords(self):
         """
@@ -861,5 +870,3 @@ class Atom(ATOM):
 
         return self.reference != None
 
-    
-        

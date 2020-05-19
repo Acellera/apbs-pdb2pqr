@@ -9,6 +9,7 @@ export ANACONDA_TOKEN=$ANACONDA_TOKEN_BASIC
 export CHANNEL=acellera
 export PACKAGE_NAME=htmd-pdb2pqr
 
+conda activate base
 conda install anaconda-client -y -q
 
 echo "Uploading to channel: $CHANNEL : PACKAGE $PACKAGE_NAME"

@@ -17,7 +17,7 @@ before_install:
   - source ci/travis/install_miniconda.sh
 
 script:
-  - pip install --user --upgrade -q setuptools wheel twine
+  - pip install --upgrade -q setuptools wheel twine
   - pip install .
 
 deploy:
